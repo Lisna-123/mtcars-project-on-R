@@ -1,0 +1,120 @@
+#Project 1: Exploratory Data Analysis (EDA) on mtcars Dataset
+
+#Goal: Analyze car performance using statistics and visualizations.
+#Steps:
+#1. Load and Explore the Data
+
+# Load the dataset
+data(mtcars)
+View(mtcars)
+df <- mtcars
+?mtcars
+dim(mtcars)
+ncol(mtcars)
+nrow(mtcars)
+?head
+head(mtcars)
+head(x=mtcars,n=5)
+?tail
+str(mtcars)# structure 
+colnames(df)
+
+# Check structure
+str(df)
+# View first few rows
+head(df)
+
+# Summary statistics
+summary(df)
+#2.Data Cleaning
+
+#Check for missing values:
+  
+sum(is.na(df))  # Should return 0 since mtcars has no missing values 
+#Rename columns for better readability:
+  
+colnames(df) <- c("mpg", "cylinders", "displacement", "horsepower", "rear_axle_ratio",
+                    "weight", "quarter_mile_time", "engine_type", "transmission",
+                    "gears", "carburetors") 
+
+row.names(df)=brands
+#3.Data Visualization using ggplot2
+
+#Install and load ggplot2 if you haven't already:
+
+install.packages("ggplot2")# repos = "http://cran.us.r-project.org")
+library("ggplot2")
+#Histogram of Miles Per Gallon (mpg)
+
+#This shows the distribution of fuel efficiency:
+  library("ggplot2")
+ggplot(df, aes(x = mpg)) + 
+geom_histogram(binwidth = 2, fill = "purple", color = "black") +
+labs(title = "Distribution of mpg", x = "Miles Per Gallon", y = "Count")+ 
+theme_minimal()
+
+
+#Scatter Plot: Horsepower vs. MPG
+
+#This shows how horsepower affects fuel efficiency:
+ggplot(df, aes(x = hp, y = mpg)) +
+  geom_point(color = "red") +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Horsepower vs MPG", x = "Horsepower", y = "Miles Per Gallon")
+
+#Boxplot: Distribution of MPG by Cylinders
+
+ggplot(df, aes(x = as.factor(cyl), y = mpg, fill = as.factor(cyl))) +
+  geom_boxplot() +
+  labs(title = "MPG Distribution by Number of Cylinders", 
+       x = "Cylinders", 
+       y = "Miles per Gallon") +
+ theme_minimal()   
+
+
+#Correlation Analysis
+
+#Check which variables are strongly related:
+    
+  cor_matrix <- cor(df)  # Compute correlation matrix
+  print(cor_matrix)   
+  
+  #Finding the car with the highest MPG:
+    
+    df[which.max(df$mpg), ]
+     
+    #    Average MPG per cylinder category:
+    
+    aggregate(mpg ~ cyl, data = df, mean)
+    
+   # Summarize your findings:
+      
+    #Cars with more horsepower tend to have lower MPG.
+    #Vehicles with 4 cylinders have the highest MPG on average.
+    #Heavier cars tend to consume more fuel.
+    
+  #Correlation between variables:
+    
+    cor(df$mpg, df$hp)  # Check correlation between MPG and Horsepower
+  
+  #Visualize correlations:
+    
+  install.packages("corrplot")
+  library(corrplot)
+  
+  corrplot(cor_matrix, method = "color", type = "lower")
+  
+  # Grouped Analysis
+  #Average mpg by Number of Cylinders
+  install.packages("dplyr")
+  library(dplyr)
+  library(ggplot2)
+  
+  df %>%
+    group_by(cyl) %>%
+    summarise(avg_mpg = mean(mpg)) %>%
+    ggplot(aes(x = factor(cyl), y = avg_mpg, fill = factor(cyl))) +
+    geom_bar(stat = "identity") +
+    labs(title = "Average mpg by Cylinder Count", 
+         x = "Number of Cylinders", 
+         y = "Average mpg")
